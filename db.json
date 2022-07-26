@@ -1,0 +1,20 @@
+{
+  "coffee":[
+     {"id": 1, "title": "Expresso Tradicional", "subtitle": "O tradicional café feito com água quente e grãos moídos", "type" : ["tradicional"], "price": 9.90, "stock": 5,
+    "imgUrl": "./src/assets/coffee/expresso.svg"},
+
+     {"id": 2, "title": "Expresso Americano", "subtitle": "Expresso diluído, menos intenso que o tradicional","type" : [ "tradicional"],  "price": 9.90, "stock": 3,"imgUrl": "./src/assets/coffee/americano.svg"}
+    ,
+     
+     {"id": 3, "title": "Expresso Cremoso", "subtitle": "Café expresso tradicional com espuma cremosa", "type" : [ "tradicional"], "price": 9.90, "stock": 6, "imgUrl": "./src/assets/coffee/expresso_cremoso.svg"},
+
+     {"id": 4, "title": "Expresso Gelado", "subtitle": "Bebida preparada com café expresso e cubos de gelo", 
+     "type" : ["tradicional","gelado"],"price": 9.90, "stock": 3,"imgUrl": "./src/assets/coffee/cafe_gelado.svg"},
+
+     {"id": 5, "title": "Café com Leite", "subtitle": "Meio a meio de expresso tradicional com leite vaporizado",
+     "type" : ["tradicional","com leite"],"price": 9.90, "stock": 10,"imgUrl": "./src/assets/coffee/cafe_com_leite.svg"},
+
+     {"id": 6, "title": "Latte", "subtitle": "Uma dose de café expresso com o dobro de leite e espuma cremosa",
+     "type" : ["tradicional","com leite"], "price": 9.90, "stock": 3,"imgUrl": "./src/assets/coffee/latte.svg"}
+    ]
+}
