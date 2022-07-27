@@ -22,7 +22,7 @@ export function Home() {
     fetch('http://localhost:3333/coffee')
       .then((response) => response.json())
       .then((responseData) => setCoffees(responseData))
-  }, [coffees])
+  }, [])
 
   return (
     <>
