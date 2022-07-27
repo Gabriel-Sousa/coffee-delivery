@@ -1,4 +1,3 @@
-import { Header } from '../../components/Header'
 import coffeeDeliverySectionImg from '../../assets/coffee-delivery-section.svg'
 import { MainContainer, SectionContainer, SectionContent } from './styles'
 import { ItemsSection } from '../../components/ItemsSection'
@@ -19,15 +18,13 @@ export function Home() {
   const [coffees, setCoffees] = useState<coffee[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:3333/coffee')
+    fetch('http://192.168.1.3:3333/coffee')
       .then((response) => response.json())
       .then((responseData) => setCoffees(responseData))
   }, [])
 
   return (
     <>
-      <Header />
-
       <SectionContainer>
         <SectionContent>
           <div className="title">

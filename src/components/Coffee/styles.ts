@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const CoffeeCardContainer = styled.div`
-  max-width: 16rem;
+  width: 16rem;
   height: 19rem;
   background: ${(props) => props.theme['base-card']};
 
@@ -12,7 +12,7 @@ export const CoffeeCardContainer = styled.div`
 
   border-radius: 6px 36px;
 
-  margin-bottom: 10rem;
+  margin-bottom: 2.5rem;
 
   header {
     margin-top: -5rem;
@@ -103,34 +103,6 @@ export const CoffeeCardContainer = styled.div`
       }
     }
 
-    .amount {
-      background: ${(props) => props.theme['base-button']};
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      padding: 0.5rem;
-      border-radius: 6px;
-      gap: 0.25rem;
-
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: 400;
-      font-size: 1rem;
-      line-height: 1.3;
-
-      button {
-        background: transparent;
-        border: 0;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-
-        color: ${(props) => props.theme['purple-500']};
-      }
-    }
-
     .shoppingCartOfCard {
       background: ${(props) => props.theme['purple-700']};
       display: flex;
@@ -139,6 +111,12 @@ export const CoffeeCardContainer = styled.div`
       border-radius: 6px;
       color: ${(props) => props.theme.white};
       cursor: pointer;
+
+      transition: background 0.2ms;
+
+      :hover {
+        background: ${(props) => props.theme['purple-500']};
+      }
     }
   }
 `

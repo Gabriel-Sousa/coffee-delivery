@@ -1,13 +1,28 @@
-import { Minus, Plus, ShoppingCart } from 'phosphor-react'
+import { ShoppingCart } from 'phosphor-react'
+import { useState } from 'react'
 import { coffee } from '../../pages/Home'
 import { CoffeeCardContainer } from './styles'
+import { toast } from 'react-toastify'
+import { Amount } from '../Amount'
 
 interface CoffeeProps {
-  key: number
   coffee: coffee
 }
 
 export function Coffee({ coffee }: CoffeeProps) {
+  const [itemSelect, setItemSelect] = useState(0)
+
+  function handleRemoveItem() {
+    if (itemSelect === 0) {
+      toast.error('Erro na adição do produto')
+      return
+    }
+    setItemSelect(itemSelect - 1)
+  }
+  function handleAddItem() {
+    setItemSelect(itemSelect + 1)
+  }
+
   return (
     <CoffeeCardContainer>
       <header>
@@ -26,19 +41,15 @@ export function Coffee({ coffee }: CoffeeProps) {
 
       <footer>
         <div>
-          <span>R$</span>
+          <span>R$ </span>
           <span>{coffee.price.toFixed(2).replace('.', ',')}</span>
         </div>
 
-        <div className="amount">
-          <button>
-            <Minus />
-          </button>
-          <span>1</span>
-          <button>
-            <Plus />
-          </button>
-        </div>
+        <Amount
+          itemSelect={itemSelect}
+          onHandleRemoveItem={handleRemoveItem}
+          onHandleAddItem={handleAddItem}
+        />
 
         <span className="shoppingCartOfCard">
           <ShoppingCart weight="fill" />

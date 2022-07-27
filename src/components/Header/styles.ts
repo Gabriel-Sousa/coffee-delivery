@@ -14,7 +14,7 @@ export const HeaderContent = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  width: 95%;
+  width: 100%;
   max-width: 1120px;
 
   img {

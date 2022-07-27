@@ -10,11 +10,9 @@ export const SectionContainer = styled.section`
   backdrop-filter: blur(5px);
 
   display: flex;
-  justify-content: center;
-  margin: 0 auto;
 
   img {
-    max-width: 29rem;
+    max-width: 28rem;
   }
 `
 export const SectionContent = styled.section`
@@ -22,11 +20,27 @@ export const SectionContent = styled.section`
   align-items: center;
   justify-content: space-between;
 
-  width: 95%;
-  max-width: 1120px;
+  @media (max-width: 920px) {
+    > img {
+      max-width: 26rem;
+    }
+  }
+  @media (max-width: 885px) {
+    flex-direction: column;
+    margin: 0 auto;
+    margin-top: 2rem;
 
-  margin-top: 5.8rem;
-  margin-bottom: 6.75rem;
+    > img {
+      max-width: 24rem;
+    }
+  }
+  @media (max-width: 720px) {
+    > img {
+      max-width: 24rem;
+    }
+  }
+
+  margin: 5.8rem 2rem 6.75rem;
 
   gap: 3.5rem;
 
@@ -34,6 +48,7 @@ export const SectionContent = styled.section`
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    font-size: 1rem;
 
     h1 {
       font-family: 'Baloo 2';
@@ -67,10 +82,6 @@ export const MainContainer = styled.main`
   display: flex;
   flex-direction: column;
 
-  margin: 0 auto;
-  width: 95%;
-  max-width: 1120px;
-
   > strong {
     font-family: 'Baloo 2';
     font-weight: 800;
@@ -78,11 +89,25 @@ export const MainContainer = styled.main`
     line-height: 1.3;
     margin-top: 3rem;
     margin-bottom: 3rem;
+
+    @media (max-width: 820px) {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
   }
 
   .coffee {
-    display: flex;
-    gap: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    grid-gap: 2rem;
     flex-wrap: wrap;
+
+    @media (max-width: 820px) {
+      display: flex;
+      justify-content: center;
+      align-self: center;
+      width: 100%;
+      grid-gap: 2rem;
+    }
   }
 `
