@@ -1,22 +1,34 @@
 import { Minus, Plus } from 'phosphor-react'
 import { AmountContainer } from './styles'
 
-// interface AmountProps {
-//   itemSelect: number
-//   onHandleRemoveItem: () => void
-//   onHandleAddItem: () => void
-// }
+interface AmountProps {
+  amount: number
+  onHandleRemoveItem: () => void
+  onHandleAddItem: () => void
+}
 
-export function Amount() {
+export function Amount({
+  amount,
+  onHandleRemoveItem,
+  onHandleAddItem,
+}: AmountProps) {
   return (
     <AmountContainer>
       <div className="amount">
-        <button disabled>
+        <button
+          onClick={() => {
+            onHandleRemoveItem()
+          }}
+        >
           <Minus />
         </button>
-        <span>{0}</span>
+        <span>{amount}</span>
         <button>
-          <Plus />
+          <Plus
+            onClick={() => {
+              onHandleAddItem()
+            }}
+          />
         </button>
       </div>
     </AmountContainer>

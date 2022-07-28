@@ -263,6 +263,7 @@ export const ItemsSelection = styled.div`
       display: flex;
       padding-bottom: 2.2rem;
       border-bottom: 1px solid ${(props) => props.theme['base-button']};
+      gap: 1.5rem;
 
       &.item + .item {
         margin-top: 2rem;

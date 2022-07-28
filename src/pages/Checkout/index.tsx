@@ -8,15 +8,38 @@ import {
 } from 'phosphor-react'
 import { CheckoutContainer, FormContainer, ItemsSelection } from './styles'
 
-import coffeeTestImg from '../../assets/coffee/americano.svg'
 import { Amount } from '../../components/Amount'
 import { useNavigate } from 'react-router-dom'
+import { Coffee, useCoffee } from '../../hooks/useCoffee'
+import { toast } from 'react-toastify'
 
 export function Checkout() {
   const navigate = useNavigate()
+  const { cart, updatedCoffees } = useCoffee()
 
   function handleSuccess() {
     navigate('/success')
+  }
+
+  function HandleRemoveItem(coffee: Coffee) {
+    const coffeesUpdated = cart.map((item) => {
+      if (item.amount === 0) {
+        toast.error('Erro na adição do produto')
+        return item
+      }
+
+      return item.id === coffee.id ? { ...item, amount: item.amount - 1 } : item
+    })
+
+    updatedCoffees(coffeesUpdated)
+  }
+
+  function HandleAddItem(coffee: Coffee) {
+    const coffeesUpdated = cart.map((item) =>
+      item.id === coffee.id ? { ...item, amount: item.amount + 1 } : item,
+    )
+
+    updatedCoffees(coffeesUpdated)
   }
 
   return (
@@ -113,38 +136,30 @@ export function Checkout() {
       <ItemsSelection>
         <span>Cafés selecionados</span>
         <div className="itemSelect">
-          <div className="item">
-            <img src={coffeeTestImg} alt="" />
-            <div className="itemBody">
-              <span>Expresso Tradicional</span>
-              <div className="footerItem">
-                <Amount />
-                <div className="remove">
-                  <span>
-                    <Trash />
-                  </span>
-                  Remover
+          {cart.map((item) => (
+            <div className="item" key={item.id}>
+              <img src={item.imgUrl} alt="" />
+              <div className="itemBody">
+                <span>{item.title}</span>
+                <div className="footerItem">
+                  <Amount
+                    amount={item.amount}
+                    onHandleRemoveItem={() => HandleRemoveItem(item)}
+                    onHandleAddItem={() => HandleAddItem(item)}
+                  />
+                  <div className="remove">
+                    <span>
+                      <Trash />
+                    </span>
+                    Remover
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="valueItem">R$ 9,90</div>
-          </div>
-          <div className="item">
-            <img src={coffeeTestImg} alt="" />
-            <div className="itemBody">
-              <span>Expresso Tradicional</span>
-              <div className="footerItem">
-                <Amount />
-                <div className="remove">
-                  <span>
-                    <Trash />
-                  </span>
-                  Remover
-                </div>
+              <div className="valueItem">
+                R$ {item.price.toFixed(2).replace('.', ',')}
               </div>
             </div>
-            <div className="valueItem">R$ 9,90</div>
-          </div>
+          ))}
 
           <div className="total">
             <div>

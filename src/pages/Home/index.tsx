@@ -2,26 +2,10 @@ import coffeeDeliverySectionImg from '../../assets/coffee-delivery-section.svg'
 import { MainContainer, SectionContainer, SectionContent } from './styles'
 import { ItemsSection } from '../../components/ItemsSection'
 import { Coffee } from '../../components/Coffee'
-import { useEffect, useState } from 'react'
-
-export interface coffee {
-  id: number
-  title: string
-  subtitle: string
-  type: [string]
-  price: number
-  stock: number
-  imgUrl: string
-}
+import { useCoffee } from '../../hooks/useCoffee'
 
 export function Home() {
-  const [coffees, setCoffees] = useState<coffee[]>([])
-
-  useEffect(() => {
-    fetch('http://192.168.1.3:3333/coffee')
-      .then((response) => response.json())
-      .then((responseData) => setCoffees(responseData))
-  }, [])
+  const { coffees } = useCoffee()
 
   return (
     <>

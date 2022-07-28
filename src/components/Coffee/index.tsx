@@ -1,26 +1,43 @@
 import { ShoppingCart } from 'phosphor-react'
 import { useState } from 'react'
-import { coffee } from '../../pages/Home'
 import { CoffeeCardContainer } from './styles'
 import { toast } from 'react-toastify'
 import { Amount } from '../Amount'
+import { useCoffee } from '../../hooks/useCoffee'
 
-interface CoffeeProps {
-  coffee: coffee
+interface CoffeePropsData {
+  id: number
+  title: string
+  subtitle: string
+  type: [string]
+  price: number
+  stock: number
+  imgUrl: string
+  amount: number
 }
 
-export function Coffee({ coffee }: CoffeeProps) {
-  const [itemSelect, setItemSelect] = useState(0)
+interface CoffeeCompProps {
+  coffee: CoffeePropsData
+}
+
+export function Coffee({ coffee }: CoffeeCompProps) {
+  const [amount, setAmount] = useState(0)
+
+  const { addCoffeeAtCart } = useCoffee()
 
   function handleRemoveItem() {
-    if (itemSelect === 0) {
+    if (amount === 0) {
       toast.error('Erro na adição do produto')
       return
     }
-    setItemSelect(itemSelect - 1)
+    setAmount(amount - 1)
   }
   function handleAddItem() {
-    setItemSelect(itemSelect + 1)
+    setAmount(amount + 1)
+  }
+
+  function handleAddCart() {
+    addCoffeeAtCart({ amount, coffee })
   }
 
   return (
@@ -28,7 +45,7 @@ export function Coffee({ coffee }: CoffeeProps) {
       <header>
         <img src={coffee.imgUrl} alt="" />
         <div className="type">
-          {coffee.type.map((type) => (
+          {coffee.type.map((type: string) => (
             <span key={coffee.id + type}>{type.toUpperCase()}</span>
           ))}
         </div>
@@ -46,12 +63,12 @@ export function Coffee({ coffee }: CoffeeProps) {
         </div>
 
         <Amount
-          itemSelect={itemSelect}
+          amount={amount}
           onHandleRemoveItem={handleRemoveItem}
           onHandleAddItem={handleAddItem}
         />
 
-        <span className="shoppingCartOfCard">
+        <span className="shoppingCartOfCard" onClick={handleAddCart}>
           <ShoppingCart weight="fill" />
         </span>
       </footer>

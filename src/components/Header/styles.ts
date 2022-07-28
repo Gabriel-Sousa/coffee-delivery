@@ -1,4 +1,10 @@
 import styled from 'styled-components'
+import { useCoffee } from '../../hooks/useCoffee'
+
+function CartLength() {
+  const { cart } = useCoffee()
+  return cart.length === 0 ? '' : cart.length
+}
 
 export const HeaderContainer = styled.header`
   background: ${(props) => props.theme.background};
@@ -61,7 +67,7 @@ export const HeaderContent = styled.div`
     border-radius: 6px;
   }
   .amountCart::after {
-    content: '1';
+    content: '${CartLength}';
     display: flex;
     align-items: center;
     background: ${(props) => props.theme['yellow-700']};
