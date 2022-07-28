@@ -263,7 +263,10 @@ export const ItemsSelection = styled.div`
       display: flex;
       padding-bottom: 2.2rem;
       border-bottom: 1px solid ${(props) => props.theme['base-button']};
-      gap: 1.5rem;
+      gap: 1rem;
+      @media (max-width: 1080px) {
+        gap: 0.1rem;
+      }
 
       &.item + .item {
         margin-top: 2rem;
@@ -297,6 +300,7 @@ export const ItemsSelection = styled.div`
 
       .footerItem {
         display: flex;
+        align-items: center;
         gap: 0.5rem;
       }
 

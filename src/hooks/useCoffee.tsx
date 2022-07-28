@@ -47,25 +47,21 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
 
   function addCoffeeAtCart({ amount, coffee }: addCoffeeAtCartProps) {
     const isAlreadyInCart = cart.findIndex((item) => item.id === coffee.id)
-    console.log(isAlreadyInCart)
     if (amount === 0) {
       toast.error('Selecione pelo menos uma unidade')
       return
     }
 
     if (isAlreadyInCart !== -1) {
-      console.log(cart)
-
       const amountModified = cart.map((item) =>
-        item.id === coffee.id ? { ...coffee, amount: amount + 1 } : coffee,
+        item.id === coffee.id ? { ...item, amount } : item,
       )
-
       setCart(amountModified)
-      console.log('Já está no carrinho')
+      // console.log('Já está no carrinho')
       return
     }
-    console.log('Não está no carrinho')
-    setCart((state) => [...state, { ...coffee, amount: 1 }])
+    // console.log('Não está no carrinho')
+    setCart((state) => [...state, { ...coffee, amount }])
   }
 
   function updatedCoffees(data: Coffee[]) {
@@ -74,7 +70,12 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
 
   return (
     <CoffeeContext.Provider
-      value={{ coffees, addCoffeeAtCart, cart, updatedCoffees }}
+      value={{
+        coffees,
+        addCoffeeAtCart,
+        cart,
+        updatedCoffees,
+      }}
     >
       {children}
     </CoffeeContext.Provider>

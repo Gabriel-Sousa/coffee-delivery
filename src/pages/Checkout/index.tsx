@@ -1,45 +1,16 @@
-import {
-  Bank,
-  CreditCard,
-  CurrencyDollar,
-  MapPin,
-  Money,
-  Trash,
-} from 'phosphor-react'
+import { Bank, CreditCard, CurrencyDollar, MapPin, Money } from 'phosphor-react'
 import { CheckoutContainer, FormContainer, ItemsSelection } from './styles'
 
-import { Amount } from '../../components/Amount'
 import { useNavigate } from 'react-router-dom'
-import { Coffee, useCoffee } from '../../hooks/useCoffee'
-import { toast } from 'react-toastify'
+import { useCoffee } from '../../hooks/useCoffee'
+import { CoffeeCheckout } from '../../components/CoffeeCheckout'
 
 export function Checkout() {
   const navigate = useNavigate()
-  const { cart, updatedCoffees } = useCoffee()
+  const { cart } = useCoffee()
 
   function handleSuccess() {
     navigate('/success')
-  }
-
-  function HandleRemoveItem(coffee: Coffee) {
-    const coffeesUpdated = cart.map((item) => {
-      if (item.amount === 0) {
-        toast.error('Erro na adição do produto')
-        return item
-      }
-
-      return item.id === coffee.id ? { ...item, amount: item.amount - 1 } : item
-    })
-
-    updatedCoffees(coffeesUpdated)
-  }
-
-  function HandleAddItem(coffee: Coffee) {
-    const coffeesUpdated = cart.map((item) =>
-      item.id === coffee.id ? { ...item, amount: item.amount + 1 } : item,
-    )
-
-    updatedCoffees(coffeesUpdated)
   }
 
   return (
@@ -137,28 +108,7 @@ export function Checkout() {
         <span>Cafés selecionados</span>
         <div className="itemSelect">
           {cart.map((item) => (
-            <div className="item" key={item.id}>
-              <img src={item.imgUrl} alt="" />
-              <div className="itemBody">
-                <span>{item.title}</span>
-                <div className="footerItem">
-                  <Amount
-                    amount={item.amount}
-                    onHandleRemoveItem={() => HandleRemoveItem(item)}
-                    onHandleAddItem={() => HandleAddItem(item)}
-                  />
-                  <div className="remove">
-                    <span>
-                      <Trash />
-                    </span>
-                    Remover
-                  </div>
-                </div>
-              </div>
-              <div className="valueItem">
-                R$ {item.price.toFixed(2).replace('.', ',')}
-              </div>
-            </div>
+            <CoffeeCheckout key={item.id} item={item} />
           ))}
 
           <div className="total">

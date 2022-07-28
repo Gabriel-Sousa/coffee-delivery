@@ -1,24 +1,47 @@
 import { Minus, Plus } from 'phosphor-react'
+import { toast } from 'react-toastify'
 import { AmountContainer } from './styles'
 
-interface AmountProps {
+interface AmountCompProps {
   amount: number
-  onHandleRemoveItem: () => void
-  onHandleAddItem: () => void
+  page: string
+  onUpdatedAmount: (value: number) => void
 }
 
-export function Amount({
-  amount,
-  onHandleRemoveItem,
-  onHandleAddItem,
-}: AmountProps) {
+export function Amount({ amount, page, onUpdatedAmount }: AmountCompProps) {
+  function HandleAddItemHome() {
+    onUpdatedAmount(amount + 1)
+  }
+  function HandleRemoveItemHome() {
+    if (amount === 0) {
+      toast.error('Erro na adição do produto')
+      return
+    }
+    onUpdatedAmount(amount - 1)
+  }
+
+  function HandleAddItemCheckout() {
+    onUpdatedAmount(amount + 1)
+  }
+
+  function HandleRemoveItemCheckout() {
+    if (amount === 1) {
+      toast.error('Erro na retirada do produto')
+      return
+    }
+    onUpdatedAmount(amount - 1)
+  }
+
   return (
     <AmountContainer>
       <div className="amount">
         <button
-          onClick={() => {
-            onHandleRemoveItem()
-          }}
+          disabled={amount <= 0}
+          onClick={() =>
+            page === 'home'
+              ? HandleRemoveItemHome()
+              : HandleRemoveItemCheckout()
+          }
         >
           <Minus />
         </button>
@@ -26,7 +49,7 @@ export function Amount({
         <button>
           <Plus
             onClick={() => {
-              onHandleAddItem()
+              page === 'home' ? HandleAddItemHome() : HandleAddItemCheckout()
             }}
           />
         </button>

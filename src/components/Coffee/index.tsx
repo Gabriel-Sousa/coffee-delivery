@@ -1,9 +1,8 @@
 import { ShoppingCart } from 'phosphor-react'
-import { useState } from 'react'
 import { CoffeeCardContainer } from './styles'
-import { toast } from 'react-toastify'
 import { Amount } from '../Amount'
 import { useCoffee } from '../../hooks/useCoffee'
+import { useState } from 'react'
 
 interface CoffeePropsData {
   id: number
@@ -21,19 +20,11 @@ interface CoffeeCompProps {
 }
 
 export function Coffee({ coffee }: CoffeeCompProps) {
+  const { addCoffeeAtCart } = useCoffee()
   const [amount, setAmount] = useState(0)
 
-  const { addCoffeeAtCart } = useCoffee()
-
-  function handleRemoveItem() {
-    if (amount === 0) {
-      toast.error('Erro na adição do produto')
-      return
-    }
-    setAmount(amount - 1)
-  }
-  function handleAddItem() {
-    setAmount(amount + 1)
+  function updatedAmount(amountUpdated: number) {
+    setAmount(amountUpdated)
   }
 
   function handleAddCart() {
@@ -62,11 +53,7 @@ export function Coffee({ coffee }: CoffeeCompProps) {
           <span>{coffee.price.toFixed(2).replace('.', ',')}</span>
         </div>
 
-        <Amount
-          amount={amount}
-          onHandleRemoveItem={handleRemoveItem}
-          onHandleAddItem={handleAddItem}
-        />
+        <Amount amount={amount} page={'home'} onUpdatedAmount={updatedAmount} />
 
         <span className="shoppingCartOfCard" onClick={handleAddCart}>
           <ShoppingCart weight="fill" />
