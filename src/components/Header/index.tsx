@@ -58,6 +58,7 @@ export function Header() {
           <Link to={'/checkout'} className="shoppingCart">
             <ShoppingCart size={22} weight="fill" />
           </Link>
+          <span className="amountCart"></span>
         </div>
       </HeaderContent>
     </HeaderContainer>

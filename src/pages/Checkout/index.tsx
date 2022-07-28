@@ -10,8 +10,15 @@ import { CheckoutContainer, FormContainer, ItemsSelection } from './styles'
 
 import coffeeTestImg from '../../assets/coffee/americano.svg'
 import { Amount } from '../../components/Amount'
+import { useNavigate } from 'react-router-dom'
 
 export function Checkout() {
+  const navigate = useNavigate()
+
+  function handleSuccess() {
+    navigate('/success')
+  }
+
   return (
     <CheckoutContainer>
       <div>
@@ -153,7 +160,9 @@ export function Checkout() {
               <span>R$ 33,20</span>
             </div>
           </div>
-          <button type="submit">confirmar pedido</button>
+          <button type="submit" onClick={handleSuccess}>
+            confirmar pedido
+          </button>
         </div>
       </ItemsSelection>
     </CheckoutContainer>

@@ -51,11 +51,34 @@ export const HeaderContent = styled.div`
   .shoppingCart {
     cursor: pointer;
     display: flex;
+    align-items: center;
     background: ${(props) => props.theme['yellow-300']};
     color: ${(props) => props.theme['yellow-700']};
 
     padding: 0.5rem;
 
+    position: relative;
     border-radius: 6px;
+  }
+  .amountCart::after {
+    content: '1';
+    display: flex;
+    align-items: center;
+    background: ${(props) => props.theme['yellow-700']};
+    color: ${(props) => props.theme.white};
+    position: relative;
+    border-radius: 999px;
+    padding: 0 5px;
+
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.75rem;
+    line-height: 1.3;
+
+    right: 22px;
+    top: -18px;
+
+    margin-right: -1rem;
   }
 `
