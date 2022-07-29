@@ -14,7 +14,12 @@ export function App() {
           <Router />
         </BrowserRouter>
       </CoffeeProvider>
-      <ToastContainer theme="dark" limit={4} />
+      <ToastContainer
+        theme="dark"
+        className="toast"
+        position="top-left"
+        autoClose={2000}
+      />
       <GlobalStyle />
     </ThemeProvider>
   )

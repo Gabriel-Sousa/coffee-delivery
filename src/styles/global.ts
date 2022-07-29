@@ -18,6 +18,16 @@ html{
     box-sizing: border-box;
   }
 
+  
+
+  @media(max-width: 720px) {
+    .toast{
+      width: 80%;
+      margin: 2rem auto;
+    }
+  }
+  
+
   body{
     background: ${(props) => props.theme.background};
 

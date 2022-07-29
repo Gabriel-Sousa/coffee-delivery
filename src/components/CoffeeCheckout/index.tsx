@@ -2,6 +2,7 @@ import { Trash } from 'phosphor-react'
 import { useState } from 'react'
 import { Coffee, useCoffee } from '../../hooks/useCoffee'
 import { Amount } from '../Amount'
+import { CoffeeCheckoutContainer } from './styles'
 
 interface CoffeeCheckoutProps {
   item: Coffee
@@ -9,37 +10,49 @@ interface CoffeeCheckoutProps {
 }
 
 export function CoffeeCheckout({ item }: CoffeeCheckoutProps) {
-  const { addCoffeeAtCart } = useCoffee()
-  const [amount, setAmount] = useState(item.amount)
+  const coffeeCheckoutData = { ...item }
+  const { addCoffeeAtCart, removeCoffeeAtCart } = useCoffee()
+  const [amount, setAmount] = useState(coffeeCheckoutData.amount)
 
   function updatedAmount(amountUpdated: number) {
     setAmount(amountUpdated)
 
-    addCoffeeAtCart({ amount: amountUpdated, coffee: item })
+    addCoffeeAtCart({ amount: amountUpdated, coffee: coffeeCheckoutData })
   }
 
+  function handleRemove(id: number) {
+    removeCoffeeAtCart(id)
+  }
+
+  console.log(coffeeCheckoutData)
+
   return (
-    <div className="item" key={item.id}>
-      <img src={item.imgUrl} alt="" />
-      <div className="itemBody">
-        <span>{item.title}</span>
-        <div className="footerItem">
-          <Amount
-            page={'checkout'}
-            amount={amount}
-            onUpdatedAmount={updatedAmount}
-          />
-          <div className="remove">
-            <span>
-              <Trash />
-            </span>
-            Remover
+    <CoffeeCheckoutContainer>
+      <div className="item" key={coffeeCheckoutData.id}>
+        <img src={coffeeCheckoutData.imgUrl} alt="" />
+        <div className="itemBody">
+          <span>{coffeeCheckoutData.title}</span>
+          <div className="footerItem">
+            <Amount
+              page={'checkout'}
+              amount={amount}
+              onUpdatedAmount={updatedAmount}
+              coffee={coffeeCheckoutData}
+            />
+            <button
+              className="remove"
+              type="button"
+              onClick={() => handleRemove(coffeeCheckoutData.id)}
+            >
+              <span>
+                <Trash />
+              </span>
+              Remover
+            </button>
           </div>
         </div>
+        <div className="valueitem">{item.formattedTotal}</div>
       </div>
-      <div className="valueItem">
-        R$ {item.price.toFixed(2).replace('.', ',')}
-      </div>
-    </div>
+    </CoffeeCheckoutContainer>
   )
 }

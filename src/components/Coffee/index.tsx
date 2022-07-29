@@ -13,6 +13,9 @@ interface CoffeePropsData {
   stock: number
   imgUrl: string
   amount: number
+  formattedPrice: string
+  total: number
+  formattedTotal: string
 }
 
 interface CoffeeCompProps {
@@ -20,8 +23,12 @@ interface CoffeeCompProps {
 }
 
 export function Coffee({ coffee }: CoffeeCompProps) {
-  const { addCoffeeAtCart } = useCoffee()
-  const [amount, setAmount] = useState(0)
+  const { addCoffeeAtCart, cart } = useCoffee()
+  const isAlreadyAtCart = cart.find((item) => item.id === coffee.id)
+
+  const [amount, setAmount] = useState(
+    isAlreadyAtCart ? isAlreadyAtCart.amount : 0,
+  )
 
   function updatedAmount(amountUpdated: number) {
     setAmount(amountUpdated)
@@ -49,11 +56,15 @@ export function Coffee({ coffee }: CoffeeCompProps) {
 
       <footer>
         <div>
-          <span>R$ </span>
-          <span>{coffee.price.toFixed(2).replace('.', ',')}</span>
+          <span>{coffee.formattedPrice}</span>
         </div>
 
-        <Amount amount={amount} page={'home'} onUpdatedAmount={updatedAmount} />
+        <Amount
+          amount={amount}
+          page={'home'}
+          onUpdatedAmount={updatedAmount}
+          coffee={coffee}
+        />
 
         <span className="shoppingCartOfCard" onClick={handleAddCart}>
           <ShoppingCart weight="fill" />

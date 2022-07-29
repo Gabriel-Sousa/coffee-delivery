@@ -1,44 +1,26 @@
 import { MapPin, ShoppingCart } from 'phosphor-react'
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logoImg from '../../assets/logo.svg'
-import api from '../../services/api'
+import { useCoffee } from '../../hooks/useCoffee'
 import { HeaderContainer, HeaderContent } from './styles'
 
-interface LocalProps {
-  state: string
-  uf: string
-}
+// interface LocalProps {
+//   state: string
+//   uf: string
+// }
 
 export function Header() {
-  const [local, setLocal] = useState<LocalProps>({
-    state: '',
-    uf: '',
-  } as LocalProps)
-  useEffect(() => {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((data) => {
-        api
-          .get(
-            `/reverse?lat=${data.coords.latitude}&lon=${data.coords.longitude}&format=json`,
-          )
-          .then((response) =>
-            setLocal({
-              ...response.data.address,
-              uf: response.data.address['ISO3166-2-lvl4'],
-            }),
-          )
-      })
-    } else {
-      alert('Erro, seu navegador não suporta o serviço de geolocalização.')
-    }
-  }, [])
+  const { local } = useCoffee()
 
   function whereState() {
-    if (local.state === '' || undefined) {
+    if (local.localidade === '' || undefined) {
       return ''
     } else {
-      return local.state + ', ' + local.uf.split('-', 2)[1]
+      if (local.bairro === '') {
+        return local.localidade + ', ' + local.uf.split('-', 2)[1]
+      } else {
+        return local.localidade + ', ' + local.uf
+      }
     }
   }
 

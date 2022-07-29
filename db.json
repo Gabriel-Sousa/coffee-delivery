@@ -7,7 +7,7 @@
       "type": [
         "tradicional"
       ],
-      "price": 9.90,
+      "price": 3.50,
       "stock": 5,
       "imgUrl": "./src/assets/coffee/expresso.svg"
     },
@@ -18,7 +18,7 @@
       "type": [
         "tradicional"
       ],
-      "price": 9.90,
+      "price": 9.50,
       "stock": 3,
       "imgUrl": "./src/assets/coffee/americano.svg"
     },
@@ -29,7 +29,7 @@
       "type": [
         "tradicional"
       ],
-      "price": 9.90,
+      "price": 2.99,
       "stock": 6,
       "imgUrl": "./src/assets/coffee/expresso_cremoso.svg"
     },
@@ -41,7 +41,7 @@
         "tradicional",
         "gelado"
       ],
-      "price": 9.90,
+      "price": 7.99,
       "stock": 3,
       "imgUrl": "./src/assets/coffee/cafe_gelado.svg"
     },
@@ -53,7 +53,7 @@
         "tradicional",
         "com leite"
       ],
-      "price": 9.90,
+      "price": 3.99,
       "stock": 10,
       "imgUrl": "./src/assets/coffee/cafe_com_leite.svg"
     },
