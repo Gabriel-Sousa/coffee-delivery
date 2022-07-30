@@ -4,23 +4,14 @@ import logoImg from '../../assets/logo.svg'
 import { useCoffee } from '../../hooks/useCoffee'
 import { HeaderContainer, HeaderContent } from './styles'
 
-// interface LocalProps {
-//   state: string
-//   uf: string
-// }
-
 export function Header() {
   const { local } = useCoffee()
 
   function whereState() {
-    if (local.localidade === '' || undefined) {
-      return ''
+    if (local.cityHeader !== '' && local.cityHeader !== '') {
+      return local.cityHeader + ', ' + local.ufHeader
     } else {
-      if (local.bairro === '') {
-        return local.localidade + ', ' + local.uf.split('-', 2)[1]
-      } else {
-        return local.localidade + ', ' + local.uf
-      }
+      return ''
     }
   }
 

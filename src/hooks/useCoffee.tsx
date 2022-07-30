@@ -1,6 +1,7 @@
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -30,15 +31,16 @@ interface addCoffeeAtCartProps {
   coffee: Coffee
 }
 
-interface localProps {
-  logradouro: string
-  bairro: string
-  localidade: string
-  uf: string
+export interface localProps {
   cep: string
-  start?: boolean
-  numero: string
-  complemento?: string
+  street: string
+  number: string
+  complement?: string
+  district: string
+  city: string
+  uf: string
+  cityHeader?: string
+  ufHeader?: string
 }
 
 export interface Payment {
@@ -75,13 +77,15 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
   } as Payment)
   const [deliveryData, setDeliveryData] = useState({} as deliveryDataProps)
   const [local, setLocal] = useState({
-    logradouro: '',
-    bairro: '',
-    localidade: '',
-    uf: '',
     cep: '',
-    complemento: '',
-    numero: '',
+    street: '',
+    number: '',
+    district: '',
+    complement: '',
+    city: '',
+    uf: '',
+    cityHeader: '',
+    ufHeader: '',
   } as localProps)
 
   useEffect(() => {
@@ -147,9 +151,7 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
     setCart(removedCoffee)
   }
 
-  function updatedLocal(data: localProps) {
-    setLocal(data)
-  }
+  const updatedLocal = useCallback((data: localProps) => setLocal(data), [])
 
   function changePaymentMethod(data: Payment) {
     setPaymentMethod(data)

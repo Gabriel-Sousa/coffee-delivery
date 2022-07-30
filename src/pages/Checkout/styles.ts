@@ -305,6 +305,15 @@ export const ItemsSelection = styled.div`
       transition: background 2ms;
       cursor: pointer;
 
+      :disabled {
+        cursor: not-allowed;
+        opacity: 0.9;
+
+        :hover {
+          background: ${(props) => props.theme['yellow-500']};
+        }
+      }
+
       :hover {
         background: ${(props) => props.theme['yellow-700']};
       }

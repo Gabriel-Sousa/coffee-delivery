@@ -1,60 +1,64 @@
 import { Bank, CreditCard, CurrencyDollar, MapPin, Money } from 'phosphor-react'
 import { CheckoutContainer, FormContainer, ItemsSelection } from './styles'
 
-// import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Payment, useCoffee } from '../../hooks/useCoffee'
 import { CoffeeCheckout } from '../../components/CoffeeCheckout'
-import { useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { apiCEP } from '../../services/api'
 import { formatPrice } from '../../utils/priceFormatted'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as zod from 'zod'
 import { toast } from 'react-toastify'
 
-const deliveryDataFormValidationSchema = zod.object({
-  cep: zod.string().min(8, 'CEP inválido'),
-  street: zod.string().min(1, 'Digite o nome da rua'),
-  number: zod.string().min(1, 'Digite um número'),
-  complement: zod.string().optional(),
-  district: zod.string().min(1, 'Digite o nome do Bairro'),
-  city: zod.string().min(1, 'Digite o nome da Cidade'),
-  uf: zod.string().min(2, 'Digite a Unidades federativas'),
-})
-
-type DeliveryDataForm = zod.infer<typeof deliveryDataFormValidationSchema>
-
 export function Checkout() {
-  // const navigate = useNavigate()
-  const { register, handleSubmit, watch, formState, reset } =
-    useForm<DeliveryDataForm>({
-      resolver: zodResolver(deliveryDataFormValidationSchema),
-      defaultValues: {
-        cep: '',
-        street: '',
-        number: '',
-        complement: '',
-        district: '',
-        city: '',
-        uf: '',
-      },
-    })
-  const { cart, changePaymentMethod, paymentMethod } = useCoffee()
-  const [disabled, setDisabled] = useState(true)
+  const { cart, changePaymentMethod, paymentMethod, updatedLocal, local } =
+    useCoffee()
+  const navigate = useNavigate()
 
-  const cep = watch('cep')
+  const [cep, setCEP] = useState(local.cep !== '' ? local.cep : '')
+  const [street, setStreet] = useState(local.street !== '' ? local.street : '')
+  const [number, setNumber] = useState(local.number !== '' ? local.number : '')
+  const [complement, setComplement] = useState(
+    local.complement !== '' ? local.complement : '',
+  )
+  const [district, setDistrict] = useState(
+    local.district !== '' ? local.district : '',
+  )
+  const [city, setCity] = useState(local.city !== '' ? local.city : '')
+  const [uf, setUF] = useState(local.uf !== '' ? local.uf : '')
+  const [cityHeader, setCityHeader] = useState(
+    local.city !== '' ? local.city : '',
+  )
+  const [ufHeader, setUfHeader] = useState(local.uf !== '' ? local.uf : '')
+  const [disabled, setDisabled] = useState(
+    !(
+      cep.length > 0 &&
+      street.length > 0 &&
+      number.length > 0 &&
+      city.length > 0 &&
+      district.length > 0 &&
+      uf.length > 0
+    ),
+  )
 
-  const errors = formState.errors
+  function handleCreateNewRequest(event: FormEvent) {
+    event.preventDefault()
 
-  if (errors.cep?.message === 'CEP inválido') {
-    toast.error('CEP inválido')
-  }
-  console.log(formState.errors)
-  function handleCreateNewRequest(data: any) {
-    console.log(data)
-    reset()
+    try {
+      if (cep.length <= 0) {
+        console.log('a')
+        throw new Error('CEP Inválido')
+      } else if (street.length <= 0) {
+        throw new Error('Dígite o nome da rua')
+      }
+    } catch (err: any) {
+      toast.error(err.message)
+    }
+
+    // updatedDeliveryData(data)
     // navigate('/success')
   }
+
+  // console.log(disabled && paymentMethod.typeOfPayment === '')
 
   useEffect(() => {
     function Trim(strTexto: string) {
@@ -82,14 +86,116 @@ export function Checkout() {
     if (cep !== undefined) {
       if (IsCEP(String(cep), '')) {
         apiCEP.get(`/${String(cep)}/json/`).then((response) => {
-          console.log(response.data)
+          const data = response.data
+
+          try {
+            if (data) {
+              if (data.erro === 'true') {
+                throw new Error(data.error)
+              }
+
+              updatedLocal({
+                cep: cep !== '' ? cep : data.cep,
+                street: street !== '' ? street : data.logradouro,
+                number: number !== '' ? number : '',
+                complement: complement !== '' ? complement : '',
+                district: district !== '' ? district : data.bairro,
+                city: city !== '' ? city : data.localidade,
+                uf: uf !== '' ? uf : data.uf,
+                cityHeader: cityHeader !== '' ? city : data.localidade,
+                ufHeader: ufHeader !== '' ? ufHeader : data.uf,
+              })
+              setCEP(cep)
+              setStreet(street !== '' ? street : data.logradouro)
+              setDistrict(data.bairro)
+              setCity(data.localidade)
+              setUF(data.uf)
+              setCityHeader(data.city)
+              setUfHeader(data.uf)
+            }
+          } catch {
+            toast.error('CEP Inválido')
+          }
         })
       }
     }
-  }, [cep])
+  }, [
+    cep,
+    updatedLocal,
+    city,
+    district,
+    complement,
+    number,
+    street,
+    uf,
+    cityHeader,
+    ufHeader,
+  ])
 
   function paymentType(data: Payment) {
     changePaymentMethod(data)
+  }
+
+  function handleCEP(data: string) {
+    setCEP(data)
+
+    console.log(local)
+    updatedLocal({
+      ...local,
+      cep: data,
+    })
+  }
+
+  function handleStreet(data: string) {
+    setStreet(data)
+    updatedLocal({
+      ...local,
+      street: data,
+    })
+  }
+
+  function handleNumber(data: string) {
+    setNumber(data)
+    console.log(local)
+
+    updatedLocal({
+      ...local,
+      number: data,
+    })
+  }
+
+  function handleDistrict(data: string) {
+    setDistrict(data)
+    updatedLocal({
+      ...local,
+      district: data,
+    })
+  }
+
+  function handleComplement(data: string) {
+    setComplement(data)
+    console.log(local)
+
+    updatedLocal({
+      ...local,
+      complement: data,
+    })
+  }
+
+  function handleCity(data: string) {
+    setCity(data)
+    updatedLocal({
+      ...local,
+      city: data,
+    })
+  }
+
+  function handleUF(data: string) {
+    setUF(data)
+    updatedLocal({
+      ...local,
+      uf: data,
+    })
   }
 
   const total = cart.reduce((sumTotal, product) => {
@@ -97,7 +203,7 @@ export function Checkout() {
   }, 0)
 
   return (
-    <CheckoutContainer onSubmit={handleSubmit(handleCreateNewRequest)}>
+    <CheckoutContainer onSubmit={handleCreateNewRequest}>
       <div>
         <span className="titleComplete">Complete seu pedido</span>
         <FormContainer>
@@ -119,49 +225,35 @@ export function Checkout() {
                 type="number"
                 placeholder="CEP"
                 onFocus={() => setDisabled(false)}
-                {...register('cep')}
+                onChange={(e) => handleCEP(e.target.value)}
+                value={cep}
               />
               <input
                 className="rua"
                 autoComplete="off"
                 type="text"
                 placeholder="Rua"
+                value={street}
                 disabled={disabled}
-                {...register('street')}
-
-                // value={rua}
-                // onChange={(e) => setRua(e.target.value)}
+                onChange={(e) => handleStreet(e.target.value)}
               />
               <input
                 className="num"
                 type="number"
                 autoComplete="off"
                 placeholder="Número"
+                value={number}
                 disabled={disabled}
-                {...register('number')}
-
-                // value={numero}
-                // onChange={(e) => {
-                //   updatedLocal({ ...local, numero: String(e.target.value) })
-                //   setNumero(String(e.target.value))
-                // }}
+                onChange={(e) => handleNumber(e.target.value)}
               />
               <input
                 className="com"
                 type="text"
                 placeholder="Complemento"
                 autoComplete="off"
+                value={complement}
                 disabled={disabled}
-                {...register('complement')}
-
-                // value={complemento}
-                // onChange={(e) => {
-                //   updatedLocal({
-                //     ...local,
-                //     complemento: String(e.target.value),
-                //   })
-                //   setComplemento(String(e.target.value))
-                // }}
+                onChange={(e) => handleComplement(e.target.value)}
               />
               <input
                 className="bai"
@@ -169,10 +261,8 @@ export function Checkout() {
                 placeholder="Bairro"
                 autoComplete="off"
                 disabled={disabled}
-                {...register('district')}
-
-                // value={bairro}
-                // onChange={(e) => setBairro(e.target.value)}
+                value={district}
+                onChange={(e) => handleDistrict(e.target.value)}
               />
               <input
                 className="cid"
@@ -180,21 +270,17 @@ export function Checkout() {
                 autoComplete="off"
                 placeholder="Cidade"
                 disabled={disabled}
-                {...register('city')}
-
-                // value={cidade}
-                // onChange={(e) => setCidade(e.target.value)}
+                value={city}
+                onChange={(e) => handleCity(e.target.value)}
               />
               <input
                 className="uf"
                 type="text"
                 autoComplete="off"
                 placeholder="UF"
+                value={uf}
                 disabled={disabled}
-                {...register('uf')}
-
-                // value={uf}
-                // onChange={(e) => setUf(e.target.value)}
+                onChange={(e) => handleUF(e.target.value)}
               />
             </div>
           </div>
@@ -282,7 +368,12 @@ export function Checkout() {
               <span>{formatPrice(total + 3.5)}</span>
             </div>
           </div>
-          <button type="submit">confirmar pedido</button>
+          <button
+            type="submit"
+            disabled={disabled || paymentMethod.typeOfPayment === ''}
+          >
+            confirmar pedido
+          </button>
         </div>
       </ItemsSelection>
     </CheckoutContainer>

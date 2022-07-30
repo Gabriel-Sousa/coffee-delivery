@@ -38,11 +38,11 @@ export function Success() {
                   Entrega em
                   <strong>
                     {' '}
-                    {dataDelivery.data.logradouro}, {dataDelivery.data.numero}
+                    {dataDelivery.data.street}, {dataDelivery.data.number}
                   </strong>
                 </span>
                 <span>
-                  {dataDelivery.data.bairro} - {dataDelivery.data.localidade},{' '}
+                  {dataDelivery.data.district} - {dataDelivery.data.city},{' '}
                   {dataDelivery.data.uf}
                 </span>
               </div>
