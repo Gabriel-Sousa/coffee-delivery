@@ -1,50 +1,60 @@
 import { Bank, CreditCard, CurrencyDollar, MapPin, Money } from 'phosphor-react'
 import { CheckoutContainer, FormContainer, ItemsSelection } from './styles'
 
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import { Payment, useCoffee } from '../../hooks/useCoffee'
 import { CoffeeCheckout } from '../../components/CoffeeCheckout'
-import { FormEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { apiCEP } from '../../services/api'
 import { formatPrice } from '../../utils/priceFormatted'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as zod from 'zod'
+import { toast } from 'react-toastify'
+
+const deliveryDataFormValidationSchema = zod.object({
+  cep: zod.string().min(8, 'CEP inválido'),
+  street: zod.string().min(1, 'Digite o nome da rua'),
+  number: zod.string().min(1, 'Digite um número'),
+  complement: zod.string().optional(),
+  district: zod.string().min(1, 'Digite o nome do Bairro'),
+  city: zod.string().min(1, 'Digite o nome da Cidade'),
+  uf: zod.string().min(2, 'Digite a Unidades federativas'),
+})
+
+type DeliveryDataForm = zod.infer<typeof deliveryDataFormValidationSchema>
 
 export function Checkout() {
-  const navigate = useNavigate()
-  const {
-    cart,
-    local,
-    updatedLocal,
-    changePaymentMethod,
-    paymentMethod,
-    updatedDeliveryData,
-    resetCoffeeAtCart,
-  } = useCoffee()
+  // const navigate = useNavigate()
+  const { register, handleSubmit, watch, formState, reset } =
+    useForm<DeliveryDataForm>({
+      resolver: zodResolver(deliveryDataFormValidationSchema),
+      defaultValues: {
+        cep: '',
+        street: '',
+        number: '',
+        complement: '',
+        district: '',
+        city: '',
+        uf: '',
+      },
+    })
+  const { cart, changePaymentMethod, paymentMethod } = useCoffee()
+  const [disabled, setDisabled] = useState(true)
 
-  const [cep, setCEP] = useState(
-    local.cep === '' ? '' : local.cep.replace('-', ''),
-  )
+  const cep = watch('cep')
 
-  const [rua, setRua] = useState(
-    local.logradouro === '' ? '' : local.logradouro,
-  )
+  const errors = formState.errors
 
-  const [numero, setNumero] = useState(local.numero === '' ? '' : local.numero)
-  const [complemento, setComplemento] = useState(
-    local.complemento === '' ? '' : local.complemento,
-  )
-  const [bairro, setBairro] = useState(local.bairro === '' ? '' : local.bairro)
-  const [cidade, setCidade] = useState(
-    local.localidade === '' ? '' : local.localidade,
-  )
-  const [uf, setUf] = useState(local.uf === '' ? '' : local.uf)
-
-  const [disabled, setDisabled] = useState(() => {
-    if (cep !== '') {
-      return false
-    } else {
-      return true
-    }
-  })
+  if (errors.cep?.message === 'CEP inválido') {
+    toast.error('CEP inválido')
+  }
+  console.log(formState.errors)
+  function handleCreateNewRequest(data: any) {
+    console.log(data)
+    reset()
+    // navigate('/success')
+  }
 
   useEffect(() => {
     function Trim(strTexto: string) {
@@ -69,72 +79,14 @@ export function Checkout() {
       }
     }
 
-    if (cep !== '' && IsCEP(cep, '')) {
-      apiCEP.get(`/${cep}/json/`).then((response) => {
-        if (local.start === true) {
-          updatedLocal({ ...response.data, complemento: '', numero: '' })
-          setRua(response.data.logradouro)
-          setBairro(response.data.bairro)
-          setCidade(response.data.localidade)
-          setUf(response.data.uf)
-
-          if (response.data.erro === 'true') {
-            updatedLocal({
-              logradouro: '',
-              bairro: '',
-              localidade: '',
-              uf: '',
-              cep: '',
-              complemento: '',
-              numero: '',
-            })
-          }
-        }
-      })
+    if (cep !== undefined) {
+      if (IsCEP(String(cep), '')) {
+        apiCEP.get(`/${String(cep)}/json/`).then((response) => {
+          console.log(response.data)
+        })
+      }
     }
-  }, [cep, updatedLocal, local])
-
-  function handleForm(event: FormEvent) {
-    event.preventDefault()
-
-    const data = {
-      cep,
-      logradouro: rua,
-      numero,
-      complemento,
-      bairro,
-      localidade: cidade,
-      uf,
-    }
-
-    updatedDeliveryData(data)
-    resetCoffeeAtCart()
-    updatedLocal({
-      logradouro: '',
-      bairro: '',
-      localidade: '',
-      uf: '',
-      cep: '',
-      complemento: '',
-      numero: '',
-    })
-    setCEP('')
-    setRua('')
-    setNumero('')
-    setComplemento('')
-    setBairro('')
-    setCidade('')
-    setUf('')
-    setDisabled(true)
-
-    navigate('/success')
-  }
-
-  function handleCEP(data: string) {
-    setCEP(data)
-
-    local.start = true
-  }
+  }, [cep])
 
   function paymentType(data: Payment) {
     changePaymentMethod(data)
@@ -145,7 +97,7 @@ export function Checkout() {
   }, 0)
 
   return (
-    <CheckoutContainer onSubmit={handleForm}>
+    <CheckoutContainer onSubmit={handleSubmit(handleCreateNewRequest)}>
       <div>
         <span className="titleComplete">Complete seu pedido</span>
         <FormContainer>
@@ -166,10 +118,8 @@ export function Checkout() {
                 className="cep"
                 type="number"
                 placeholder="CEP"
-                value={cep}
-                name="cep"
-                onChange={(e) => handleCEP(e.target.value)}
                 onFocus={() => setDisabled(false)}
+                {...register('cep')}
               />
               <input
                 className="rua"
@@ -177,8 +127,10 @@ export function Checkout() {
                 type="text"
                 placeholder="Rua"
                 disabled={disabled}
-                value={rua}
-                onChange={(e) => setRua(e.target.value)}
+                {...register('street')}
+
+                // value={rua}
+                // onChange={(e) => setRua(e.target.value)}
               />
               <input
                 className="num"
@@ -186,57 +138,63 @@ export function Checkout() {
                 autoComplete="off"
                 placeholder="Número"
                 disabled={disabled}
-                value={numero}
-                onChange={(e) => {
-                  updatedLocal({ ...local, numero: String(e.target.value) })
-                  setNumero(String(e.target.value))
-                }}
+                {...register('number')}
+
+                // value={numero}
+                // onChange={(e) => {
+                //   updatedLocal({ ...local, numero: String(e.target.value) })
+                //   setNumero(String(e.target.value))
+                // }}
               />
               <input
                 className="com"
                 type="text"
                 placeholder="Complemento"
                 autoComplete="off"
-                name="complemento"
                 disabled={disabled}
-                value={complemento}
-                onChange={(e) => {
-                  updatedLocal({
-                    ...local,
-                    complemento: String(e.target.value),
-                  })
-                  setComplemento(String(e.target.value))
-                }}
+                {...register('complement')}
+
+                // value={complemento}
+                // onChange={(e) => {
+                //   updatedLocal({
+                //     ...local,
+                //     complemento: String(e.target.value),
+                //   })
+                //   setComplemento(String(e.target.value))
+                // }}
               />
               <input
                 className="bai"
                 type="text"
                 placeholder="Bairro"
-                name="bairro"
                 autoComplete="off"
                 disabled={disabled}
-                value={bairro}
-                onChange={(e) => setBairro(e.target.value)}
+                {...register('district')}
+
+                // value={bairro}
+                // onChange={(e) => setBairro(e.target.value)}
               />
               <input
                 className="cid"
                 type="text"
                 autoComplete="off"
                 placeholder="Cidade"
-                name="cidade"
                 disabled={disabled}
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
+                {...register('city')}
+
+                // value={cidade}
+                // onChange={(e) => setCidade(e.target.value)}
               />
               <input
                 className="uf"
                 type="text"
                 autoComplete="off"
                 placeholder="UF"
-                name="uf"
                 disabled={disabled}
-                value={uf}
-                onChange={(e) => setUf(e.target.value)}
+                {...register('uf')}
+
+                // value={uf}
+                // onChange={(e) => setUf(e.target.value)}
               />
             </div>
           </div>
