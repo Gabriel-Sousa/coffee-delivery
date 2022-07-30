@@ -51,6 +51,7 @@ export function Amount({
     <AmountContainer>
       <div className="amount">
         <button
+          type="button"
           disabled={page === 'home' ? amount <= 0 : amount <= 1}
           onClick={() =>
             page === 'home'
@@ -61,7 +62,7 @@ export function Amount({
           <Minus />
         </button>
         <span>{amount}</span>
-        <button>
+        <button type="button">
           <Plus
             onClick={() => {
               page === 'home' ? HandleAddItemHome() : HandleAddItemCheckout()
