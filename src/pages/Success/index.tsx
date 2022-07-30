@@ -1,8 +1,24 @@
 import { SuccessContainer } from './styles'
 import deliveryImg from '../../assets/delivery.svg'
 import { CurrencyDollar, MapPin, Timer } from 'phosphor-react'
+import { useCoffee } from '../../hooks/useCoffee'
 
 export function Success() {
+  const { deliveryData } = useCoffee()
+
+  const dataDelivery = { ...deliveryData }
+
+  const typeData = deliveryData.paymentMethod?.typeOfPayment
+
+  const typePayment =
+    typeData === 'creditCard'
+      ? 'Cartão de Crédito'
+      : typeData === 'creditDebit'
+      ? 'Cartão de Débito'
+      : typeData === 'money'
+      ? 'Dinheiro'
+      : ''
+
   return (
     <SuccessContainer>
       <div className="titleSuccess">
@@ -19,9 +35,16 @@ export function Success() {
               </span>
               <div className="information">
                 <span>
-                  Entrega em <strong>Rua João Daniel Martinelli, 102</strong>
+                  Entrega em
+                  <strong>
+                    {' '}
+                    {dataDelivery.data?.rua}, {dataDelivery.data?.numero}
+                  </strong>
                 </span>
-                <span>Farrapos - Porto Alegre, RS</span>
+                <span>
+                  {dataDelivery.data?.bairro} - {dataDelivery.data?.localidade},{' '}
+                  {dataDelivery.data?.uf}
+                </span>
               </div>
             </div>
             <div>
@@ -39,7 +62,7 @@ export function Success() {
               </span>
               <div className="information">
                 <span>Pagamento na entrega</span>
-                <strong>Cartão de Crédito</strong>
+                <strong>{typePayment}</strong>
               </div>
             </div>
           </div>

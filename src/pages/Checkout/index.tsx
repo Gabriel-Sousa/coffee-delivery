@@ -4,16 +4,39 @@ import { CheckoutContainer, FormContainer, ItemsSelection } from './styles'
 import { useNavigate } from 'react-router-dom'
 import { Payment, useCoffee } from '../../hooks/useCoffee'
 import { CoffeeCheckout } from '../../components/CoffeeCheckout'
-import { useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { apiCEP } from '../../services/api'
+import { formatPrice } from '../../utils/priceFormatted'
 
 export function Checkout() {
   const navigate = useNavigate()
-  const { cart, local, updatedLocal, changePaymentMethod, paymentMethod } =
-    useCoffee()
+  const {
+    cart,
+    local,
+    updatedLocal,
+    changePaymentMethod,
+    paymentMethod,
+    updatedDeliveryData,
+  } = useCoffee()
+
   const [cep, setCEP] = useState(
     local.cep === '' ? '' : local.cep.replace('-', ''),
   )
+
+  const [rua, setRua] = useState(
+    local.logradouro === '' ? '' : local.logradouro,
+  )
+
+  const [numero, setNumero] = useState(local.numero === '' ? '' : local.numero)
+  const [complemento, setComplemento] = useState(
+    local.complemento === '' ? '' : local.complemento,
+  )
+  const [bairro, setBairro] = useState(local.bairro === '' ? '' : local.bairro)
+  const [cidade, setCidade] = useState(
+    local.localidade === '' ? '' : local.localidade,
+  )
+  const [uf, setUf] = useState(local.uf === '' ? '' : local.uf)
+
   const [disabled, setDisabled] = useState(() => {
     if (cep !== '') {
       return false
@@ -49,6 +72,10 @@ export function Checkout() {
       apiCEP.get(`/${cep}/json/`).then((response) => {
         if (local.start === true) {
           updatedLocal(response.data)
+          setRua(response.data.logradouro)
+          setBairro(response.data.bairro)
+          setCidade(response.data.localidade)
+          setUf(response.data.uf)
           if (response.data.erro === 'true') {
             updatedLocal({
               logradouro: '',
@@ -56,6 +83,9 @@ export function Checkout() {
               localidade: '',
               uf: '',
               cep: '',
+              complemento: '',
+              numero: '',
+              rua: '',
             })
           }
         }
@@ -63,7 +93,21 @@ export function Checkout() {
     }
   }, [cep, updatedLocal, local])
 
-  function handleSuccess() {
+  function handleForm(event: FormEvent) {
+    event.preventDefault()
+
+    const data = {
+      cep,
+      rua,
+      numero,
+      complemento,
+      bairro,
+      localidade: cidade,
+      uf,
+    }
+
+    updatedDeliveryData(data)
+
     navigate('/success')
   }
 
@@ -77,8 +121,12 @@ export function Checkout() {
     changePaymentMethod(data)
   }
 
+  const total = cart.reduce((sumTotal, product) => {
+    return sumTotal + product.total
+  }, 0)
+
   return (
-    <CheckoutContainer>
+    <CheckoutContainer onSubmit={handleForm}>
       <div>
         <span className="titleComplete">Complete seu pedido</span>
         <FormContainer>
@@ -95,52 +143,78 @@ export function Checkout() {
 
             <div className="inputGrid">
               <input
+                autoComplete="off"
                 className="cep"
                 type="number"
                 placeholder="CEP"
                 value={cep}
+                name="cep"
                 onChange={(e) => handleCEP(e.target.value)}
                 onFocus={() => setDisabled(false)}
               />
               <input
                 className="rua"
+                autoComplete="off"
                 type="text"
                 placeholder="Rua"
                 disabled={disabled}
-                value={local.logradouro}
+                value={rua}
+                onChange={(e) => setRua(e.target.value)}
               />
               <input
                 className="num"
                 type="number"
+                autoComplete="off"
                 placeholder="Número"
                 disabled={disabled}
+                value={numero}
+                onChange={(e) => {
+                  updatedLocal({ ...local, numero: e.target.value })
+                  setNumero(e.target.value)
+                }}
               />
               <input
                 className="com"
                 type="text"
                 placeholder="Complemento"
+                autoComplete="off"
+                name="complemento"
                 disabled={disabled}
+                value={complemento}
+                onChange={(e) => {
+                  updatedLocal({ ...local, complemento: e.target.value })
+                  setComplemento(e.target.value)
+                }}
               />
               <input
                 className="bai"
                 type="text"
                 placeholder="Bairro"
+                name="bairro"
+                autoComplete="off"
                 disabled={disabled}
-                value={local.bairro}
+                value={bairro}
+                onChange={(e) => setBairro(e.target.value)}
               />
               <input
                 className="cid"
                 type="text"
+                autoComplete="off"
                 placeholder="Cidade"
+                name="cidade"
                 disabled={disabled}
-                value={local.localidade}
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
               />
               <input
                 className="uf"
                 type="text"
+                autoComplete="off"
                 placeholder="UF"
+                name="uf"
                 disabled={disabled}
-                value={local.uf}
+                value={uf}
+                onChange={(e) => setUf(e.target.value)}
               />
             </div>
           </div>
@@ -217,7 +291,7 @@ export function Checkout() {
           <div className="total">
             <div>
               <span>Total de itens</span>
-              <span>R$ 29,70</span>
+              <span>{formatPrice(total)}</span>
             </div>
             <div>
               <span>Entrega</span>
@@ -225,12 +299,10 @@ export function Checkout() {
             </div>
             <div>
               <span>Total</span>
-              <span>R$ 33,20</span>
+              <span>{formatPrice(total + 3.5)}</span>
             </div>
           </div>
-          <button type="submit" onClick={handleSuccess}>
-            confirmar pedido
-          </button>
+          <button type="submit">confirmar pedido</button>
         </div>
       </ItemsSelection>
     </CheckoutContainer>

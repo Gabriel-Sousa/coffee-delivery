@@ -24,8 +24,6 @@ export function CoffeeCheckout({ item }: CoffeeCheckoutProps) {
     removeCoffeeAtCart(id)
   }
 
-  console.log(coffeeCheckoutData)
-
   return (
     <CoffeeCheckoutContainer>
       <div className="item" key={coffeeCheckoutData.id}>

@@ -34,13 +34,21 @@ interface localProps {
   logradouro?: string
   bairro?: string
   localidade: string
-  uf: string
+  uf?: string
   cep: string
   start?: boolean
+  numero: string
+  complemento: string
+  rua?: string
 }
 
 export interface Payment {
   typeOfPayment: 'creditCard' | 'money' | 'creditDebit' | ''
+}
+
+export interface deliveryDataProps {
+  data: localProps
+  paymentMethod?: Payment
 }
 
 interface CoffeeContextData {
@@ -49,7 +57,9 @@ interface CoffeeContextData {
   local: localProps
   paymentMethod: Payment
   addCoffeeAtCart: ({ amount, coffee }: addCoffeeAtCartProps) => void
+  deliveryData: deliveryDataProps
   updatedCoffees: (data: Coffee[]) => void
+  updatedDeliveryData: (data: localProps) => void
   removeCoffeeAtCart: (id: number) => void
   updatedLocal: (data: localProps) => void
   changePaymentMethod: (data: Payment) => void
@@ -63,6 +73,7 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
   const [paymentMethod, setPaymentMethod] = useState<Payment>({
     typeOfPayment: '',
   } as Payment)
+  const [deliveryData, setDeliveryData] = useState({} as deliveryDataProps)
   const [local, setLocal] = useState({
     logradouro: '',
     bairro: '',
@@ -135,6 +146,12 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
     setPaymentMethod(data)
   }
 
+  function updatedDeliveryData(data: localProps) {
+    console.log({ ...data, paymentMethod })
+
+    setDeliveryData({ data, paymentMethod })
+  }
+
   return (
     <CoffeeContext.Provider
       value={{
@@ -147,6 +164,8 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
         updatedLocal,
         paymentMethod,
         changePaymentMethod,
+        deliveryData,
+        updatedDeliveryData,
       }}
     >
       {children}

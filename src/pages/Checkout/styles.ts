@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const CheckoutContainer = styled.div`
+export const CheckoutContainer = styled.form`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,7 +29,7 @@ export const CheckoutContainer = styled.div`
   }
 `
 
-export const FormContainer = styled.form`
+export const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
