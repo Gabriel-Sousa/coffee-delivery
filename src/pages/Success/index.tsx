@@ -38,12 +38,12 @@ export function Success() {
                   Entrega em
                   <strong>
                     {' '}
-                    {dataDelivery.data?.rua}, {dataDelivery.data?.numero}
+                    {dataDelivery.data.logradouro}, {dataDelivery.data.numero}
                   </strong>
                 </span>
                 <span>
-                  {dataDelivery.data?.bairro} - {dataDelivery.data?.localidade},{' '}
-                  {dataDelivery.data?.uf}
+                  {dataDelivery.data.bairro} - {dataDelivery.data.localidade},{' '}
+                  {dataDelivery.data.uf}
                 </span>
               </div>
             </div>

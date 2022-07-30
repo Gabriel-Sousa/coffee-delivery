@@ -31,15 +31,14 @@ interface addCoffeeAtCartProps {
 }
 
 interface localProps {
-  logradouro?: string
-  bairro?: string
+  logradouro: string
+  bairro: string
   localidade: string
-  uf?: string
+  uf: string
   cep: string
   start?: boolean
   numero: string
-  complemento: string
-  rua?: string
+  complemento?: string
 }
 
 export interface Payment {
@@ -63,6 +62,7 @@ interface CoffeeContextData {
   removeCoffeeAtCart: (id: number) => void
   updatedLocal: (data: localProps) => void
   changePaymentMethod: (data: Payment) => void
+  resetCoffeeAtCart: () => void
 }
 
 const CoffeeContext = createContext({} as CoffeeContextData)
@@ -80,6 +80,8 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
     localidade: '',
     uf: '',
     cep: '',
+    complemento: '',
+    numero: '',
   } as localProps)
 
   useEffect(() => {
@@ -133,6 +135,13 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
     setCart(data)
   }
 
+  function resetCoffeeAtCart() {
+    setPaymentMethod({
+      typeOfPayment: '',
+    })
+    setCart([])
+  }
+
   function removeCoffeeAtCart(id: number) {
     const removedCoffee = cart.filter((item) => item.id !== id)
     setCart(removedCoffee)
@@ -147,8 +156,6 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
   }
 
   function updatedDeliveryData(data: localProps) {
-    console.log({ ...data, paymentMethod })
-
     setDeliveryData({ data, paymentMethod })
   }
 
@@ -166,6 +173,7 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
         changePaymentMethod,
         deliveryData,
         updatedDeliveryData,
+        resetCoffeeAtCart,
       }}
     >
       {children}

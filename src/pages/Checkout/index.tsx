@@ -17,6 +17,7 @@ export function Checkout() {
     changePaymentMethod,
     paymentMethod,
     updatedDeliveryData,
+    resetCoffeeAtCart,
   } = useCoffee()
 
   const [cep, setCEP] = useState(
@@ -71,11 +72,12 @@ export function Checkout() {
     if (cep !== '' && IsCEP(cep, '')) {
       apiCEP.get(`/${cep}/json/`).then((response) => {
         if (local.start === true) {
-          updatedLocal(response.data)
+          updatedLocal({ ...response.data, complemento: '', numero: '' })
           setRua(response.data.logradouro)
           setBairro(response.data.bairro)
           setCidade(response.data.localidade)
           setUf(response.data.uf)
+
           if (response.data.erro === 'true') {
             updatedLocal({
               logradouro: '',
@@ -85,7 +87,6 @@ export function Checkout() {
               cep: '',
               complemento: '',
               numero: '',
-              rua: '',
             })
           }
         }
@@ -98,7 +99,7 @@ export function Checkout() {
 
     const data = {
       cep,
-      rua,
+      logradouro: rua,
       numero,
       complemento,
       bairro,
@@ -107,6 +108,24 @@ export function Checkout() {
     }
 
     updatedDeliveryData(data)
+    resetCoffeeAtCart()
+    updatedLocal({
+      logradouro: '',
+      bairro: '',
+      localidade: '',
+      uf: '',
+      cep: '',
+      complemento: '',
+      numero: '',
+    })
+    setCEP('')
+    setRua('')
+    setNumero('')
+    setComplemento('')
+    setBairro('')
+    setCidade('')
+    setUf('')
+    setDisabled(true)
 
     navigate('/success')
   }
@@ -169,8 +188,8 @@ export function Checkout() {
                 disabled={disabled}
                 value={numero}
                 onChange={(e) => {
-                  updatedLocal({ ...local, numero: e.target.value })
-                  setNumero(e.target.value)
+                  updatedLocal({ ...local, numero: String(e.target.value) })
+                  setNumero(String(e.target.value))
                 }}
               />
               <input
@@ -182,8 +201,11 @@ export function Checkout() {
                 disabled={disabled}
                 value={complemento}
                 onChange={(e) => {
-                  updatedLocal({ ...local, complemento: e.target.value })
-                  setComplemento(e.target.value)
+                  updatedLocal({
+                    ...local,
+                    complemento: String(e.target.value),
+                  })
+                  setComplemento(String(e.target.value))
                 }}
               />
               <input
