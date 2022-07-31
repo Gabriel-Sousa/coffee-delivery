@@ -278,6 +278,7 @@ export const ItemsSelection = styled.div`
       gap: 0.75rem;
 
       color: ${(props) => props.theme['base-text']};
+
       div {
         display: flex;
         justify-content: space-between;
@@ -289,6 +290,12 @@ export const ItemsSelection = styled.div`
           margin-bottom: 1.5rem;
         }
       }
+    }
+
+    .noneCoffeeTotal {
+      border-top: 1px solid ${(props) => props.theme['base-button']};
+
+      padding-top: 2rem;
     }
     button[type='submit'] {
       padding: 0.75rem;
@@ -318,5 +325,9 @@ export const ItemsSelection = styled.div`
         background: ${(props) => props.theme['yellow-700']};
       }
     }
+  }
+
+  .noneCoffee {
+    padding-top: 7.25rem;
   }
 `

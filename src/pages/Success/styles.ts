@@ -12,6 +12,11 @@ export const SuccessContainer = styled.main`
     margin-top: 5rem;
     gap: 0.25rem;
 
+    @media (max-width: 1080px) {
+      width: 100%;
+      text-align: center;
+    }
+
     span:first-child {
       font-family: 'Baloo 2';
       font-style: normal;
@@ -27,7 +32,12 @@ export const SuccessContainer = styled.main`
       font-size: 20px;
       line-height: 1.3;
       color: ${(props) => props.theme['base-subtitle']};
+
       margin-bottom: 2.5rem;
+
+      @media (max-width: 1080px) {
+        text-align: center;
+      }
     }
   }
 

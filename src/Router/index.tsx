@@ -7,7 +7,6 @@ import { Success } from '../pages/Success'
 
 export function Router() {
   const { deliveryData } = useCoffee()
-
   return (
     <Routes>
       <Route path="/" element={<DefaultLayout />}>

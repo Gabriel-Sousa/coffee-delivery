@@ -49,7 +49,7 @@ export function CoffeeCheckout({ item }: CoffeeCheckoutProps) {
             </button>
           </div>
         </div>
-        <div className="valueitem">{item.formattedTotal}</div>
+        <div className="valueItem">{item.formattedTotal}</div>
       </div>
     </CoffeeCheckoutContainer>
   )

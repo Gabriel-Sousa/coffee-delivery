@@ -71,25 +71,66 @@ const CoffeeContext = createContext({} as CoffeeContextData)
 
 export function CoffeeProvider({ children }: CoffeeProviderProps) {
   const [coffees, setCoffees] = useState<Coffee[]>([])
-  const [cart, setCart] = useState<Coffee[]>([])
-  const [paymentMethod, setPaymentMethod] = useState<Payment>({
-    typeOfPayment: '',
-  } as Payment)
-  const [deliveryData, setDeliveryData] = useState({} as deliveryDataProps)
-  const [local, setLocal] = useState({
-    cep: '',
-    street: '',
-    number: '',
-    district: '',
-    complement: '',
-    city: '',
-    uf: '',
-    cityHeader: '',
-    ufHeader: '',
-  } as localProps)
+  const [cart, setCart] = useState<Coffee[]>(() => {
+    const storedStateAsJSON = localStorage.getItem(
+      '@coffee-delivery:cart-state-1.0.0',
+    )
+
+    if (storedStateAsJSON) {
+      console.log(storedStateAsJSON)
+      return JSON.parse(storedStateAsJSON)
+    }
+
+    return []
+  })
+  const [paymentMethod, setPaymentMethod] = useState<Payment>(() => {
+    const storedStateAsJSON = localStorage.getItem(
+      '@coffee-delivery:payment-type-1.0.0',
+    )
+
+    if (storedStateAsJSON) {
+      return JSON.parse(storedStateAsJSON)
+    }
+
+    return {
+      typeOfPayment: '',
+    } as Payment
+  })
+  const [deliveryData, setDeliveryData] = useState(() => {
+    const storedStateAsJSON = localStorage.getItem(
+      '@coffee-delivery:delivery-data-1.0.0',
+    )
+
+    if (storedStateAsJSON) {
+      return JSON.parse(storedStateAsJSON)
+    }
+
+    return {} as deliveryDataProps
+  })
+  const [local, setLocal] = useState(() => {
+    const storedStateAsJSON = localStorage.getItem(
+      '@coffee-delivery:local-1.0.0',
+    )
+
+    if (storedStateAsJSON) {
+      return JSON.parse(storedStateAsJSON)
+    }
+
+    return {
+      cep: '',
+      street: '',
+      number: '',
+      district: '',
+      complement: '',
+      city: '',
+      uf: '',
+      cityHeader: '',
+      ufHeader: '',
+    } as localProps
+  })
 
   useEffect(() => {
-    fetch('http://192.168.1.2:3333/coffee')
+    fetch('http://localhost:3333/coffee')
       .then((response) => response.json())
       .then((responseData) => {
         const data = responseData.map((item: Coffee) => {
@@ -98,6 +139,10 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
         setCoffees(data)
       })
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('@coffee-delivery:local-1.0.0', JSON.stringify(local))
+  }, [local])
 
   function addCoffeeAtCart({ amount, coffee }: addCoffeeAtCartProps) {
     const isAlreadyInCart = cart.findIndex((item) => item.id === coffee.id)
@@ -118,20 +163,27 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
           : item,
       )
       setCart(amountModified)
+      const stateJSON = JSON.stringify(amountModified)
+
+      localStorage.setItem('@coffee-delivery:cart-state-1.0.0', stateJSON)
       // console.log('Já está no carrinho')
       return
     }
 
     // console.log('Não está no carrinho')
-    setCart((state) => [
-      ...state,
-      {
-        ...coffee,
-        amount,
-        total: amount * coffee.price,
-        formattedTotal: formatPrice(amount * coffee.price),
-      },
-    ])
+
+    const newItemAtCart = {
+      ...coffee,
+      amount,
+      total: amount * coffee.price,
+      formattedTotal: formatPrice(amount * coffee.price),
+    }
+    setCart((state) => [...state, newItemAtCart])
+
+    const stateJSON = JSON.stringify([...cart, newItemAtCart])
+
+    localStorage.setItem('@coffee-delivery:cart-state-1.0.0', stateJSON)
+
     toast.success('Adicionado com sucesso')
   }
 
@@ -149,16 +201,45 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
   function removeCoffeeAtCart(id: number) {
     const removedCoffee = cart.filter((item) => item.id !== id)
     setCart(removedCoffee)
+    localStorage.setItem(
+      '@coffee-delivery:cart-state-1.0.0',
+      JSON.stringify(removedCoffee),
+    )
+    toast.success('Removido com sucesso')
   }
 
   const updatedLocal = useCallback((data: localProps) => setLocal(data), [])
 
   function changePaymentMethod(data: Payment) {
     setPaymentMethod(data)
+    localStorage.setItem(
+      '@coffee-delivery:payment-type-1.0.0',
+      JSON.stringify(data),
+    )
   }
 
   function updatedDeliveryData(data: localProps) {
     setDeliveryData({ data, paymentMethod })
+    setCart([])
+    setPaymentMethod({ typeOfPayment: '' })
+    setLocal({
+      cep: '',
+      street: '',
+      number: '',
+      complement: '',
+      district: '',
+      city: '',
+      uf: '',
+      cityHeader: '',
+      ufHeader: '',
+    })
+    localStorage.setItem('@coffee-delivery:cart-state-1.0.0', '')
+    localStorage.setItem('@coffee-delivery:local-1.0.0', '')
+    localStorage.setItem(
+      '@coffee-delivery:delivery-data-1.0.0',
+      JSON.stringify({ data, paymentMethod }),
+    )
+    localStorage.setItem('@coffee-delivery:payment-type-1.0.0', '')
   }
 
   return (

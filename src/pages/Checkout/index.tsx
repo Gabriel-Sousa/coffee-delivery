@@ -10,8 +10,14 @@ import { formatPrice } from '../../utils/priceFormatted'
 import { toast } from 'react-toastify'
 
 export function Checkout() {
-  const { cart, changePaymentMethod, paymentMethod, updatedLocal, local } =
-    useCoffee()
+  const {
+    cart,
+    changePaymentMethod,
+    paymentMethod,
+    updatedLocal,
+    local,
+    updatedDeliveryData,
+  } = useCoffee()
   const navigate = useNavigate()
 
   const [cep, setCEP] = useState(local.cep !== '' ? local.cep : '')
@@ -39,26 +45,44 @@ export function Checkout() {
       uf.length > 0
     ),
   )
+  const [oldCEP, setOldCEP] = useState(cep !== '' ? cep : '')
 
   function handleCreateNewRequest(event: FormEvent) {
     event.preventDefault()
 
     try {
       if (cep.length <= 0) {
-        console.log('a')
         throw new Error('CEP Inválido')
       } else if (street.length <= 0) {
-        throw new Error('Dígite o nome da rua')
+        throw new Error('Dígite o nome da Rua')
+      } else if (number.length <= 0) {
+        throw new Error('Dígite o Número da casa')
+      } else if (district.length <= 0) {
+        throw new Error('Dígite o nome do Bairro')
+      } else if (city.length <= 0) {
+        throw new Error('Dígite o nome da Cidade')
+      } else if (uf.length !== 2) {
+        throw new Error('Dígite A Unidade Federativa')
+      } else if (paymentMethod.typeOfPayment === '') {
+        throw new Error('Selecione a forma de pagamento')
+      } else if (cart.length === 0) {
+        throw new Error('Nenhum café selecionado')
       }
+      const data = {
+        cep,
+        street,
+        number,
+        complement,
+        district,
+        city,
+        uf,
+      }
+      updatedDeliveryData(data)
+      navigate('/success')
     } catch (err: any) {
       toast.error(err.message)
     }
-
-    // updatedDeliveryData(data)
-    // navigate('/success')
   }
-
-  // console.log(disabled && paymentMethod.typeOfPayment === '')
 
   useEffect(() => {
     function Trim(strTexto: string) {
@@ -91,9 +115,14 @@ export function Checkout() {
           try {
             if (data) {
               if (data.erro === 'true') {
-                throw new Error(data.error)
+                throw new Error('Error 404')
               }
 
+              if (oldCEP === cep) {
+                throw new Error('same')
+              }
+
+              setOldCEP(cep)
               updatedLocal({
                 cep: cep !== '' ? cep : data.cep,
                 street: street !== '' ? street : data.logradouro,
@@ -106,15 +135,17 @@ export function Checkout() {
                 ufHeader: ufHeader !== '' ? ufHeader : data.uf,
               })
               setCEP(cep)
-              setStreet(street !== '' ? street : data.logradouro)
+              setStreet(data.logradouro)
               setDistrict(data.bairro)
               setCity(data.localidade)
               setUF(data.uf)
               setCityHeader(data.city)
               setUfHeader(data.uf)
             }
-          } catch {
-            toast.error('CEP Inválido')
+          } catch (e: any) {
+            if (e.message === 'Error 404') {
+              toast.error('CEP Inválido ')
+            }
           }
         })
       }
@@ -130,6 +161,7 @@ export function Checkout() {
     uf,
     cityHeader,
     ufHeader,
+    oldCEP,
   ])
 
   function paymentType(data: Payment) {
@@ -139,7 +171,6 @@ export function Checkout() {
   function handleCEP(data: string) {
     setCEP(data)
 
-    console.log(local)
     updatedLocal({
       ...local,
       cep: data,
@@ -156,7 +187,6 @@ export function Checkout() {
 
   function handleNumber(data: string) {
     setNumber(data)
-    console.log(local)
 
     updatedLocal({
       ...local,
@@ -174,7 +204,6 @@ export function Checkout() {
 
   function handleComplement(data: string) {
     setComplement(data)
-    console.log(local)
 
     updatedLocal({
       ...local,
@@ -349,12 +378,14 @@ export function Checkout() {
 
       <ItemsSelection>
         <span className="titleSelect">Cafés selecionados</span>
-        <div className="itemSelect">
+        <div className={`itemSelect ${cart.length === 0 ? ' noneCoffee' : ''}`}>
           {cart.map((item) => (
             <CoffeeCheckout key={item.id} item={item} />
           ))}
 
-          <div className="total">
+          <div
+            className={`total ${cart.length === 0 ? ' noneCoffeeTotal' : ''}`}
+          >
             <div>
               <span>Total de itens</span>
               <span>{formatPrice(total)}</span>
