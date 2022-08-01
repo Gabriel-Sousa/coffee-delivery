@@ -133,7 +133,6 @@ export function CoffeeProvider({ children }: CoffeeProviderProps) {
     fetch('https://servercoffeedelivery-production.up.railway.app/coffee')
       .then((response) => response.json())
       .then((responseData) => {
-        console.log(responseData)
         const data = responseData.map((item: Coffee) => {
           return { ...item, formattedPrice: formatPrice(item.price) }
         })

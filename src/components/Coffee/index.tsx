@@ -41,7 +41,7 @@ export function Coffee({ coffee }: CoffeeCompProps) {
   return (
     <CoffeeCardContainer>
       <header>
-        <img src={coffee.imgUrl} alt="" />
+        <img src={require(coffee.imgUrl)} alt="" />
         <div className="type">
           {coffee.type.map((type: string) => (
             <span key={coffee.id + type}>{type.toUpperCase()}</span>

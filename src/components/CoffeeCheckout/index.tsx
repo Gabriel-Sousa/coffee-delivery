@@ -27,7 +27,7 @@ export function CoffeeCheckout({ item }: CoffeeCheckoutProps) {
   return (
     <CoffeeCheckoutContainer>
       <div className="item" key={coffeeCheckoutData.id}>
-        <img src={coffeeCheckoutData.imgUrl} alt="" />
+        <img src={require(coffeeCheckoutData.imgUrl)} alt="" />
         <div className="itemBody">
           <span>{coffeeCheckoutData.title}</span>
           <div className="footerItem">
