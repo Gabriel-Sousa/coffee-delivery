@@ -10,8 +10,6 @@ interface CoffeeCheckoutProps {
 }
 
 export function CoffeeCheckout({ item }: CoffeeCheckoutProps) {
-  const image = require(item.imgUrl)
-
   const coffeeCheckoutData = { ...item }
   const { addCoffeeAtCart, removeCoffeeAtCart } = useCoffee()
   const [amount, setAmount] = useState(coffeeCheckoutData.amount)
@@ -29,7 +27,7 @@ export function CoffeeCheckout({ item }: CoffeeCheckoutProps) {
   return (
     <CoffeeCheckoutContainer>
       <div className="item" key={coffeeCheckoutData.id}>
-        <img src={image} alt="" />
+        <img src={coffeeCheckoutData.imgUrl} alt="" />
         <div className="itemBody">
           <span>{coffeeCheckoutData.title}</span>
           <div className="footerItem">

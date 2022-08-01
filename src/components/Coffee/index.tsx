@@ -23,8 +23,6 @@ interface CoffeeCompProps {
 }
 
 export function Coffee({ coffee }: CoffeeCompProps) {
-  const image = require(coffee.imgUrl)
-
   const { addCoffeeAtCart, cart } = useCoffee()
   const isAlreadyAtCart = cart.find((item) => item.id === coffee.id)
 
@@ -43,7 +41,7 @@ export function Coffee({ coffee }: CoffeeCompProps) {
   return (
     <CoffeeCardContainer>
       <header>
-        <img src={image} alt="" />
+        <img src={coffee.imgUrl} alt="" />
         <div className="type">
           {coffee.type.map((type: string) => (
             <span key={coffee.id + type}>{type.toUpperCase()}</span>
